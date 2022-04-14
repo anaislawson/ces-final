@@ -48,7 +48,20 @@ int outPorts[] = {15, 27, 26, 25};
 int index = 0;
 int count = 0; 
 const String people[6] = {"Anais, Sahory, Andre, Mark, Gen, Kennedi"};
+//int ledPin = 13;                // LED 
+int pirPin = 2;                 // PIR Out pin 
+int pirStat = 0;                   // PIR status
 
+void loop(){
+ pirStat = digitalRead(pirPin); 
+ if (pirStat == HIGH) {            // if motion detected
+   digitalWrite(ledPin, HIGH);  // turn LED ON
+   Serial.println("Hey I got you!!!");
+ } 
+ else {
+   digitalWrite(ledPin, LOW); // turn LED OFF if we have no motion
+ }
+} 
 Servo myservoOne;  // create servo object to control a servo
 Servo myservoTwo;  // create servo object to control a servo
 
@@ -66,13 +79,16 @@ void setup() {
 
   myservoTwo.setPeriodHertz(50);           // standard 50 hz servo
   myservoTwo.attach(servoPin, 500, 2500);  // attaches the servo on servoPin to the servo object
-  
+  pinMode(ledPin, OUTPUT);     
+  pinMode(pirPin, INPUT);     
+  Serial.begin(9600);
 }
 
 void loop()
 {
    
   delay(100); // this speeds up the simulation  
+
   //read potentiometer  
   int potVal = analogRead(12);
   //read joystick
@@ -83,12 +99,17 @@ void loop()
       //next name
       index = (index + 1) % 6;
   }  
-  else{
-      count = 0;
+  else if(joyVal < 2000){
+    count = 0;
   }
   //change weather
   if (potVal < 1000 and potVal > 100){
-      //sun
+    //STEPPER MOTOR
+    //Should only rotate if there is "sunny"  
+    // Rotate a full turn
+    moveSteps(true, 32 * 64, 3);
+    delay(1000);
+    //sun
   }
   if (potVal < 2000 and potVal > 1000){
       //rain
@@ -100,26 +121,32 @@ void loop()
       //cloudy
   }
 
-  //STEPPER MOTOR
-  //Should only rotate if there is "sunny"  
-  // Rotate a full turn
-  moveSteps(true, 32 * 64, 3);
-  delay(1000);
   
   
-  //only run if the person and lighting is correct  
-  //SERVO MOTOR
-  for (posVal = 0; posVal <= 180; posVal += 1) { // goes from 0 degrees to 180 degrees
-    // in steps of 1 degree
-    myservo.write(posVal);       // tell servo to go to position in variable 'pos'
-    delay(15);                   // waits 15ms for the servo to reach the position
+  
+
+  pirStat = digitalRead(pirPin); 
+  if (pirStat == HIGH) {            // if motion detected
+    digitalWrite(ledPin, HIGH);  // turn LED ON
+    Serial.println("Hey I got you!!!");
+    //TRUTH STATEMENT
+    //only run if the person and lighting is correct  
+    //SERVO MOTOR
+    for (posVal = 0; posVal <= 180; posVal += 1) { // goes from 0 degrees to 180 degrees
+      // in steps of 1 degree
+      myservoOne.write(posVal);       // tell servo to go to position in variable 'pos'
+      myservoTwo.write(posVal);       // tell servo to go to position in variable 'pos'
+      delay(30);                   // waits 15ms for the servo to reach the position
+    }
+    for (posVal = 180; posVal >= 0; posVal -= 1) { // goes from 180 degrees to 0 degrees
+      myservoOne.write(posVal);       // tell servo to go to position in variable 'pos'
+      myservoTwo.write(posVal);       // tell servo to go to position in variable 'pos'
+      delay(30);                   // waits 15ms for the servo to reach the position
+    }  
+  } 
+  else {
+    digitalWrite(ledPin, LOW); // turn LED OFF if we have no motion
   }
-  for (posVal = 180; posVal >= 0; posVal -= 1) { // goes from 180 degrees to 0 degrees
-    myservo.write(posVal);       // tell servo to go to position in variable 'pos'
-    delay(15);                   // waits 15ms for the servo to reach the position
-  }  
-
-
 
 
 
