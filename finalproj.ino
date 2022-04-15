@@ -19,12 +19,16 @@ using namespace std;
 using std::cout; using std::cin;
 using std::endl; using std::string;
 using std::map; using std::copy;
-
+//All for LED
 Freenove_ESP32_WS2812 strip = Freenove_ESP32_WS2812(LEDS_COUNT, LEDS_PIN, CHANNEL, TYPE_GRB);
 
 u8 m_color[5][3] = {{0, 0, 255}, {255, 255, 255}, {0, 0, 0} };
-int delayval = 100;
-
+int delayval = 30;
+int weatherIndex = 0;
+int opencount = 0;
+int potVal = 0;
+bool flag = false;
+//
 map<string, string> sunny = {"Anais", "yes",},
                                 {"Sahory", "yes",},
                                 {"Andre", "yes",},
@@ -63,16 +67,16 @@ const string people[6] = {"Anais, Sahory, Andre, Mark, Gen, Kennedi"};
 int pirPin = 2;                 // PIR Out pin 
 int pirStat = 0;                   // PIR status
 
-void loop(){
- pirStat = digitalRead(pirPin); 
- if (pirStat == HIGH) {            // if motion detected
-   digitalWrite(ledPin, HIGH);  // turn LED ON
-   Serial.println("Hey I got you!!!");
- } 
- else {
-   digitalWrite(ledPin, LOW); // turn LED OFF if we have no motion
- }
-} 
+// void loop(){
+//  pirStat = digitalRead(pirPin); 
+//  if (pirStat == HIGH) {            // if motion detected
+//    digitalWrite(ledPin, HIGH);  // turn LED ON
+//    Serial.println("Hey I got you!!!");
+//  } 
+//  else {
+//    digitalWrite(ledPin, LOW); // turn LED OFF if we have no motion
+//  }
+// } 
 Servo myservoOne;  // create servo object to control a servo
 Servo myservoTwo;  // create servo object to control a servo
 
@@ -105,7 +109,7 @@ void loop()
   delay(100); // this speeds up the simulation  
 
   //read potentiometer  
-  int potVal = analogRead(12);
+  potVal = analogRead(12);
   //read joystick
   int joyVal = analogRead(27);
   //change person  
@@ -118,18 +122,22 @@ void loop()
   else if(joyVal < 2000){
     count = 0;
   }
+  potVal = analogRead(12);
+  Serial.println(potVal);
+
   //change weather
   if (potVal < 1000 and potVal > 100){
     //STEPPER MOTOR
     //Should only rotate if there is "sunny"  
     // Rotate a full turn
     while(true){ 
-      moveSteps(true, 32 * 64, 3);
-      for (int i = 0; i < LEDS_COUNT; i++) {
-        strip.setLedColorData(i, m_color[2][0], m_color[2][1], m_color[2][2]);
-        strip.show();
-        delay(delayval);
+      //moveSteps(true, 32 * 64, 3);
+      potVal = analogRead(12);
+      Serial.println(potVal);
+      if(potVal > 1000){
+        break;
       }    
+      
     }
     weatherIndex = 1;
     opencount = 0;
@@ -140,13 +148,52 @@ void loop()
     opencount = 0;
       //rain
     while(true){
+      
       for (int i = 0; i < LEDS_COUNT; i++) {
         strip.setLedColorData(i, m_color[0][0], m_color[0][1], m_color[0][2]);
         strip.show();
         delay(delayval);
+        potVal = analogRead(12);
+        Serial.println(potVal);
+        if(potVal > 2000 or potVal < 1000){
+          strip.setAllLedsColorData(0, 0, 0);
+          strip.show();
+          flag = true;
+          break;
+        }   
       }
-      delay(500);
+      if(flag){
+        flag = false;
+        break; 
+      }
+
+      for (int i = 0; i < LEDS_COUNT; i++) {
+        strip.setLedColorData(i, m_color[2][0], m_color[2][1], m_color[2][2]);
+        strip.show();
+        delay(delayval);
+        potVal = analogRead(12);
+        Serial.println(potVal);
+        if(potVal > 2000 or potVal < 1000){
+          strip.setAllLedsColorData(0, 0, 0);
+          strip.show();
+          flag = true;
+          break;
+        }   
+      }
+      if(flag){
+        flag =false;
+        break; 
+      }
+      potVal = analogRead(12);
+      Serial.println(potVal);
+      if(potVal > 2000 or potVal < 1000 or flag == true){
+        strip.setAllLedsColorData(0, 0, 0);
+        strip.show();
+        flag = false;
+        break;
+      } 
     }
+     
   }
   if (potVal < 3000 and potVal > 2000){
     weatherIndex = 3;
@@ -157,9 +204,46 @@ void loop()
         strip.setLedColorData(i, m_color[1][0], m_color[1][1], m_color[1][2]);
         strip.show();
         delay(delayval);
+        potVal = analogRead(12);
+        Serial.println(potVal);
+        if(potVal > 3000 or potVal < 2000){
+          strip.setAllLedsColorData(0, 0, 0);
+          strip.show();
+          flag = true;
+          break;
+        } 
       }
-      delay(500);
+      if(flag){
+        flag =false;
+        break; 
+      }
+      for (int i = 0; i < LEDS_COUNT; i++) {
+        strip.setLedColorData(i, m_color[2][0], m_color[2][1], m_color[2][2]);
+        strip.show();
+        delay(delayval);
+        potVal = analogRead(12);
+        Serial.println(potVal);
+        if(potVal > 3000 or potVal < 2000){
+          strip.setAllLedsColorData(0, 0, 0);
+          strip.show();
+          flag = true;
+          break;
+        }   
+      }
+      if(flag){
+        flag =false;
+        break; 
+      }
+      potVal = analogRead(12);
+      Serial.println(potVal);
+      if(potVal > 3000 or flag == true){
+        strip.setAllLedsColorData(0, 0, 0);
+        strip.show();
+        flag = false;
+        break;
+      }  
     }
+    
     
   }
   if (potVal > 3000){
@@ -167,8 +251,23 @@ void loop()
     opencount = 0;
     //cloudy
     while(true){
-      Blink(10, 500);
+      if (potVal > 3000 and flag == false){
+        Blink(10, 500);
+      }
+      if(flag){
+        flag =false;
+        break; 
+      }
+      potVal = analogRead(12);
+      Serial.println(potVal);
+      if(potVal < 3000 and flag == true){
+        strip.setAllLedsColorData(0, 0, 0);
+        strip.show();
+        flag = false;
+        break;
+      } 
     }
+     
   }
 
   
