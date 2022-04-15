@@ -8,12 +8,22 @@
 #include <iostream>
 #include <map>
 #include <cstring>
+#include <string>
+#include <Freenove_WS2812_Lib_for_ESP32.h>
 
+#define LEDS_COUNT 10 // The number of led
+#define LEDS_PIN 2 // define the pin connected to the Freenove 8 led strip
+#define CHANNEL 0 // RMT channel
 using namespace std;
 
 using std::cout; using std::cin;
 using std::endl; using std::string;
 using std::map; using std::copy;
+
+Freenove_ESP32_WS2812 strip = Freenove_ESP32_WS2812(LEDS_COUNT, LEDS_PIN, CHANNEL, TYPE_GRB);
+
+u8 m_color[5][3] = {{0, 0, 255}, {255, 255, 255}, {0, 0, 0} };
+int delayval = 100;
 
 map<string, string> sunny = {"Anais", "yes",},
                                 {"Sahory", "yes",},
@@ -30,7 +40,7 @@ map<string, string> rain = {"Anais", "no",},
                                 {"Kennedi", "no",}}; 
                                 
 
-map<string, string> thunderstorm = {"Anais", "no",},
+map<string, string> snow = {"Anais", "yes",},
                                 {"Sahory", "yes",},
                                 {"Andre", "yes",},
                                 {"Mark", "no",},
@@ -46,8 +56,9 @@ map<string, string> cloudy = {{"Anais", "yes",},
 // Connect the port of the stepper motor driver
 int outPorts[] = {15, 27, 26, 25};
 int index = 0;
-int count = 0; 
-const String people[6] = {"Anais, Sahory, Andre, Mark, Gen, Kennedi"};
+int count = 0;
+int opencount = 0; 
+const string people[6] = {"Anais, Sahory, Andre, Mark, Gen, Kennedi"};
 //int ledPin = 13;                // LED 
 int pirPin = 2;                 // PIR Out pin 
 int pirStat = 0;                   // PIR status
@@ -67,7 +78,8 @@ Servo myservoTwo;  // create servo object to control a servo
 
 int posVal = 0;    // variable to store the servo position
 int servoPin = 15; // Servo motor pin
-char name[] = people[0];
+int weatherIndex = 0;
+string name = people[0];
 void setup() {
   //motor setup  
   // set pins to output
@@ -79,9 +91,12 @@ void setup() {
 
   myservoTwo.setPeriodHertz(50);           // standard 50 hz servo
   myservoTwo.attach(servoPin, 500, 2500);  // attaches the servo on servoPin to the servo object
-  pinMode(ledPin, OUTPUT);     
+  //pinMode(ledPin, OUTPUT);     
   pinMode(pirPin, INPUT);     
   Serial.begin(9600);
+
+  strip.begin();
+  strip.setBrightness(10);
 }
 
 void loop()
@@ -95,8 +110,9 @@ void loop()
   int joyVal = analogRead(27);
   //change person  
   if (joyVal > 2000 && count == 0) {
-      
+      name = people[index];
       //next name
+      opencount = 0;
       index = (index + 1) % 6;
   }  
   else if(joyVal < 2000){
@@ -107,18 +123,52 @@ void loop()
     //STEPPER MOTOR
     //Should only rotate if there is "sunny"  
     // Rotate a full turn
-    moveSteps(true, 32 * 64, 3);
-    delay(1000);
+    while(true){ 
+      moveSteps(true, 32 * 64, 3);
+      for (int i = 0; i < LEDS_COUNT; i++) {
+        strip.setLedColorData(i, m_color[2][0], m_color[2][1], m_color[2][2]);
+        strip.show();
+        delay(delayval);
+      }    
+    }
+    weatherIndex = 1;
+    opencount = 0;
     //sun
   }
   if (potVal < 2000 and potVal > 1000){
+    weatherIndex = 2;
+    opencount = 0;
       //rain
+    while(true){
+      for (int i = 0; i < LEDS_COUNT; i++) {
+        strip.setLedColorData(i, m_color[0][0], m_color[0][1], m_color[0][2]);
+        strip.show();
+        delay(delayval);
+      }
+      delay(500);
+    }
   }
   if (potVal < 3000 and potVal > 2000){
-      //thunderstorm
+    weatherIndex = 3;
+    opencount = 0;
+    //snow
+    while(true){
+      for (int i = 0; i < LEDS_COUNT; i++) {
+        strip.setLedColorData(i, m_color[1][0], m_color[1][1], m_color[1][2]);
+        strip.show();
+        delay(delayval);
+      }
+      delay(500);
+    }
+    
   }
   if (potVal > 3000){
-      //cloudy
+    weatherIndex = 4;
+    opencount = 0;
+    //cloudy
+    while(true){
+      Blink(10, 500);
+    }
   }
 
   
@@ -126,27 +176,41 @@ void loop()
   
 
   pirStat = digitalRead(pirPin); 
-  if (pirStat == HIGH) {            // if motion detected
-    digitalWrite(ledPin, HIGH);  // turn LED ON
+  if (pirStat == HIGH && opencount == 0) {            // if motion detected
+    //digitalWrite(ledPin, HIGH);  // turn LED ON
     Serial.println("Hey I got you!!!");
-    //TRUTH STATEMENT
-    //only run if the person and lighting is correct  
-    //SERVO MOTOR
-    for (posVal = 0; posVal <= 180; posVal += 1) { // goes from 0 degrees to 180 degrees
-      // in steps of 1 degree
-      myservoOne.write(posVal);       // tell servo to go to position in variable 'pos'
-      myservoTwo.write(posVal);       // tell servo to go to position in variable 'pos'
-      delay(30);                   // waits 15ms for the servo to reach the position
+    if (weatherIndex == 1){
+      string ans = sunny[name];
+      if (ans == "yes"){
+        openDoor();
+        opencount +=1;
+      }
     }
-    for (posVal = 180; posVal >= 0; posVal -= 1) { // goes from 180 degrees to 0 degrees
-      myservoOne.write(posVal);       // tell servo to go to position in variable 'pos'
-      myservoTwo.write(posVal);       // tell servo to go to position in variable 'pos'
-      delay(30);                   // waits 15ms for the servo to reach the position
-    }  
+    else if (weatherIndex == 2){
+      string ans = rain[name]; 
+      if (ans == "yes"){
+        openDoor();
+        opencount +=1;
+      }
+    }
+    else if (weatherIndex == 3){
+      string ans = thunderstorm[name];  
+      if (ans == "yes"){
+        openDoor();
+        opencount +=1;
+      }
+    }
+    else if (weatherIndex == 4){
+      string ans = cloudy[name];   
+      if (ans == "yes"){
+        openDoor();
+        opencount +=1;
+      }
+    }
   } 
-  else {
-    digitalWrite(ledPin, LOW); // turn LED OFF if we have no motion
-  }
+  // else {
+  //   digitalWrite(ledPin, LOW); // turn LED OFF if we have no motion
+  // }
 
 
 
@@ -184,5 +248,34 @@ void moveAngle(bool dir, int angle, byte ms){
   moveSteps(dir,(angle*32*64/360),ms);
 }
 
+void openDoor(){
+  //SERVO MOTOR
+  for (posVal = 0; posVal <= 180; posVal += 1) { // goes from 0 degrees to 180 degrees
+      // in steps of 1 degree
+      myservoOne.write(posVal);       // tell servo to go to position in variable 'pos'
+      myservoTwo.write(posVal);       // tell servo to go to position in variable 'pos'
+      delay(30);                   // waits 15ms for the servo to reach the position
+    }
+  for (posVal = 180; posVal >= 0; posVal -= 1) { // goes from 180 degrees to 0 degrees
+    myservoOne.write(posVal);       // tell servo to go to position in variable 'pos'
+    myservoTwo.write(posVal);       // tell servo to go to position in variable 'pos'
+    delay(30);                   // waits 15ms for the servo to reach the position
+  }  
+}
 
+void Blink(int blinknum, int blinkwait)
+{
+  for (int i = 0; i < blinknum; i++)
+  {
+    strip.setLedColorData(i, 35, 35, 35);
+  }
+  strip.show();
+  delay(blinkwait);
+  for (int j = 0; j < blinknum; j++)
+  {
+  strip.setLedColorData(j, 0, 0, 0);
+  }
+  strip.show();
+  delay(blinkwait);
+}
 
