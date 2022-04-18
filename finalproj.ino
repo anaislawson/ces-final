@@ -97,7 +97,7 @@ void setup() {
   myservoTwo.attach(servoPin, 500, 2500);  // attaches the servo on servoPin to the servo object
   //pinMode(ledPin, OUTPUT);     
   pinMode(pirPin, INPUT);     
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   strip.begin();
   strip.setBrightness(10);
@@ -293,7 +293,7 @@ void loop()
       }
     }
     else if (weatherIndex == 3){
-      string ans = thunderstorm[name];  
+      string ans = snow[name];  
       if (ans == "yes"){
         openDoor();
         opencount +=1;
