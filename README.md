@@ -49,7 +49,7 @@ Using image at bottom:
 - Wrap LED strip through first slot and wrap through second and third then wrap the remainder through the slots horizontally
 ---
 ### Component assembly
-- Use hot glue and electric tape to hold pieces in place, howeve4r you deem fit.
+- Use hot glue and electric tape to hold pieces in place, however you deem fit.
 ---
 ### Decorative Components
 - Cotton balls to cover LED strip slots
