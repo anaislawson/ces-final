@@ -37,6 +37,8 @@ Using image at bottom:
 ---
 ### Build Enclosure
 - Use .svg files to build up enclosures
+- Note: Due to issues with software one file contains the laser cutting information for the front cloosure, the second has a slot for the window side and the third has a slot of the motion sensor
+-- Using the certain software such as Adobe Illustrator will allow you copy and paste these components into one svg file if preferred
 - remove joystick slot (bigger circle next to smaller circle)
 - remove ESP display slot (rectangle next to small circle)
 ---
