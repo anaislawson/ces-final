@@ -43,10 +43,12 @@ With the motion sensor oriented downward we the pins are at the bottom
 - Connect the green wire (second wire) to `GPIO Pin #2` slot on breadboard
 - Connect the white wire (third wire) to a ground slot on breadboard
 ### Potentiometer
-Using image at bottom:
+Using image:
+<img width="355" alt="Screen Shot 2022-05-08 at 6 02 23 PM" src="https://user-images.githubusercontent.com/59630586/167317592-3e8cbdfe-14a2-43ab-b664-56c43d1e3801.png">
 - Connect the pin `1` to 3V slot on breadboard
 - Connect the pin `2` to `GPIO Pin #12`slot on breadboard
 - Connect the pin `3` to ground slot on breadboard
+
 ---
 ### Build Enclosure
 - Use .svg files to build up enclosures
@@ -77,5 +79,4 @@ Using image at bottom:
 ---
 Youtube link:https://www.youtube.com/watch?v=IFtez64X5I4
 
- 
-<img width="355" alt="Screen Shot 2022-05-08 at 6 02 23 PM" src="https://user-images.githubusercontent.com/59630586/167317592-3e8cbdfe-14a2-43ab-b664-56c43d1e3801.png">
+
