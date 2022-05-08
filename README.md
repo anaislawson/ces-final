@@ -27,7 +27,7 @@ Using image at bottom:
 - Connect the pin `1` to 3V slot on breadboard
 - Connect the pin `2` to `GPIO Pin #12`slot on breadboard
 - Connect the pin `3` to ground slot on breadboard
-
+---
 ### Build Enclosure
 - Use .svg files to build up enclosures
 - remove joystick slot (bigger circle next to smaller circle)
@@ -35,7 +35,7 @@ Using image at bottom:
 ### Modifying front and bottom enclosure
 - On the side that aligns with the LED strips, use the dremel to smooth out 6 or 7 of the teeth on both the front and bottom piece of enclosure
 
-### LED strinp usage
+### LED strip usage
 - Wrap LED strip through first slot and wrap through second and third then wrap the remainder through the slots horizontally
 
 ### Component assembly
