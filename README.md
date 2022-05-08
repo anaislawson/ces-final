@@ -1,5 +1,13 @@
 # Final Project
 
+## Code
+
+### Upload Device Code
+- Open the Arduino IDE
+- Open `cesfinalproj.ino` from the Arduino IDE
+- Plug in the ESP32
+- Select `Sketch > Upload`
+---
 ## Component Wiring
 
 ### Servo Motor
