@@ -1,7 +1,6 @@
 # Final Project
 
 ## Code
-
 ### Upload Device Code
 - Open the Arduino IDE
 - Open `cesfinalproj.ino` from the Arduino IDE
@@ -9,7 +8,6 @@
 - Select `Sketch > Upload`
 ---
 ## Component Wiring
-
 ### Servo Motor
 - Connect the orange wire (first wire) to `GPIO Pin #13`slot on breadboard
 - Connect the red wire (second wire) to the 5V slot on breadboard
