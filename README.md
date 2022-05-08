@@ -54,6 +54,8 @@ Using image at bottom:
 -- Using the certain software such as Adobe Illustrator will allow you copy and paste these components into one svg file if preferred
 - remove joystick slot (bigger circle next to smaller circle)
 - remove ESP display slot (rectangle next to small circle)
+  Suggestions:
+    - For easy detachment, glue all the sides of the box piece except the top and back side(or just the top) and press the side(s) on
 ---
 ### Modifying front and bottom enclosure
 - On the side that aligns with the LED strips, use the dremel to smooth out 6 or 7 of the teeth on both the front and bottom piece of enclosure
