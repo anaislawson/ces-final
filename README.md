@@ -14,7 +14,6 @@
 - Open `Arduino/libraries/TFT_eSPI/User_Setup_Select.h`
 - Comment out the line that says `#include <User_Setup.h>`
 - Uncomment the line that says `#include <User_Setups/Setup25_TTGO_T_Display.h>` 
----
 ### Upload Device Code
 - Open the Arduino IDE
 - Open `cesfinalproj.ino` from the Arduino IDE
